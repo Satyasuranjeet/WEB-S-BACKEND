@@ -29,6 +29,10 @@ def get_html(url):
         logger.error(f"Error fetching URL {url}: {e}")
         return None
 
+@app.route('/')
+def home():
+    return jsonify({'message': 'Welcome to the Python Backend API!'})
+
 @app.route('/scrape', methods=['POST'])
 def scrape():
     url = request.json.get('url')
