@@ -8,10 +8,12 @@ import logging
 import os
 
 app = Flask(__name__)
-CORS(app)
+
+# Configure CORS
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # MongoDB Configuration
-MONGO_URI = os.getenv('MONGO_URI', 'mongodb+srv://satya:satya@cluster0.8thgg4a.mongodb.net/')
+MONGO_URI = os.getenv('MONGO_URI', 'mongodb+srv://username:password@cluster0.mongodb.net/')
 client = MongoClient(MONGO_URI)
 db = client['WebscraperDB']
 users_collection = db['users']
@@ -28,10 +30,6 @@ def get_html(url):
     except requests.RequestException as e:
         logger.error(f"Error fetching URL {url}: {e}")
         return None
-
-@app.route('/')
-def home():
-    return jsonify({'message': 'Welcome to the Python Backend API!'})
 
 @app.route('/scrape', methods=['POST'])
 def scrape():
@@ -55,7 +53,7 @@ def register():
     if not email or not password:
         return jsonify({'error': 'Email or password not provided'}), 400
 
-    hashed_password = generate_password_hash(password)
+    hashed_password = generate_password_hash(password, method='sha256')
 
     # Check if user already exists
     if users_collection.find_one({'email': email}):
